@@ -1,0 +1,26 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]  # Срабатывает при пуше в main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2  # Забирает твой код из репозитория
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable  # Устанавливает Rust, на котором написан ZCB 3
+
+      - name: Install trunk
+        run: cargo install trunk  # Утилита для сборки WASM
+
+      - name: Build Web App
+        run: trunk build --release  # Собирает сайт в папку dist
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist  # Выкладывает собранную папку на GitHub Pages
